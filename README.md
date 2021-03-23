@@ -1,3 +1,6 @@
+Repository initialized from the EGamma Tag-and-Probe tool, with the intention of performing sudies of tracker material budget using fbrem measurements.
+
+
 # EgammaAnalysis-TnPTreeProducer
 
 Package of the EGamma group to produce Tag-and-Probe trees
