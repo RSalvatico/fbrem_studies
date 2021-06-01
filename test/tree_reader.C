@@ -77,7 +77,7 @@ void tree_reader() {
     
   //TFile* fileIn_DATA = new TFile("/eos/cms/store/group/phys_egamma/tnpTuples/tomc/2020-05-20/UL2017/merged/Run2017B.root");
   TFile* fileIn_DATA = new TFile("../ntuples/2017_DATA.root");
-  TFile* fileIn_MC   = new TFile("/eos/cms/store/group/phys_egamma/tnpTuples/tomc/2020-05-20/UL2017/merged/DY_LO.root");
+  TFile* fileIn_MC   = new TFile("/eos/cms/store/group/phys_egamma/tnpTuples/tomc/2020-05-20/UL2017/merged/DY_NLO.root");
   
   TTree* treeIn_DATA = (TTree*)fileIn_DATA->Get("tnpEleTrig/fitter_tree");
   TTree* treeIn_MC   = (TTree*)fileIn_MC->Get("tnpEleTrig/fitter_tree");
@@ -99,11 +99,22 @@ void tree_reader() {
   TH1F* h_fBrem_Minus_B_MC   = new TH1F("h_fBrem_Minus_B_MC","",25,0.,1.);
   TH1F* h_fBrem_Minus_E_MC   = new TH1F("h_fBrem_Minus_E_MC","",25,0.,1.);
   
-  TH1F* h_mass_B_DATA = new TH1F("h_mass_B_DATA","",30,60.,120.);
-  TH1F* h_mass_E_DATA = new TH1F("h_mass_E_DATA","",30,60.,120.);
-  TH1F* h_mass_B_MC   = new TH1F("h_mass_B_MC","",30,60.,120.);
-  TH1F* h_mass_E_MC   = new TH1F("h_mass_E_MC","",30,60.,120.);
-  
+  TH1F* h_mass_B_DATA = new TH1F("h_mass_B_DATA","",120,60.,120.);
+  TH1F* h_mass_E_DATA = new TH1F("h_mass_E_DATA","",120,60.,120.);
+  TH1F* h_mass_B_MC   = new TH1F("h_mass_B_MC","",120,60.,120.);
+  TH1F* h_mass_E_MC   = new TH1F("h_mass_E_MC","",120,60.,120.);
+
+  TH1F* h_mass_negFbrem_B_DATA = new TH1F("h_mass_negFbrem_B_DATA","",120,60.,120.);
+  TH1F* h_mass_negFbrem_E_DATA = new TH1F("h_mass_negFbrem_E_DATA","",120,60.,120.);
+  TH1F* h_mass_negFbrem_B_MC   = new TH1F("h_mass_negFbrem_B_MC","",120,60.,120.);
+  TH1F* h_mass_negFbrem_E_MC   = new TH1F("h_mass_negFbrem_E_MC","",120,60.,120.);
+
+  TH1F* h_el_energy_DATA = new TH1F("h_el_energy_DATA","",270,30.,300.);
+  TH1F* h_el_energy_MC   = new TH1F("h_el_energy_MC","",270,30.,300.);
+
+  TH1F* h_PVz_DATA = new TH1F("h_PVz_DATA","",60,-15.,15.);
+  TH1F* h_PVz_MC   = new TH1F("h_PVz_MC","",60,-15.,15.);
+
   TH2F* h2_fBrem_phi_DATA = new TH2F("h2_fBrem_phi_DATA","",100,-3.14,3.14,50,0.,1.);
   TH2F* h2_fBrem_phi_MC   = new TH2F("h2_fBrem_phi_MC","",100,-3.14,3.14,50,0.,1.);
   TH2F* h2_fBrem_pT_DATA  = new TH2F("h2_fBrem_pT_DATA","",50,33.,80.,50,0.,1.);
@@ -111,27 +122,33 @@ void tree_reader() {
   TH2F* h2_fBrem_eta_DATA = new TH2F("h2_fBrem_eta_DATA","",100,-2.5,2.5,50,0.,1.);
   TH2F* h2_fBrem_eta_MC   = new TH2F("h2_fBrem_eta_MC","",100,-2.5,2.5,50,0.,1.);
 
-  TH1F* h_array_fBrem[2][2]       = {{h_fBrem_B_DATA,h_fBrem_B_MC},{h_fBrem_E_DATA,h_fBrem_E_MC}};
-  TH1F* h_array_fBrem_Plus[2][2]  = {{h_fBrem_Plus_B_DATA,h_fBrem_Plus_B_MC},{h_fBrem_Plus_E_DATA,h_fBrem_Plus_E_MC}};
-  TH1F* h_array_fBrem_Minus[2][2] = {{h_fBrem_Minus_B_DATA,h_fBrem_Minus_B_MC},{h_fBrem_Minus_E_DATA,h_fBrem_Minus_E_MC}};
-  TH1F* h_array_mass[2][2]        = {{h_mass_B_DATA,h_mass_B_MC},{h_mass_E_DATA,h_mass_E_MC}};
-  TH2F* h2_array_fBrem_phi[2]     = {h2_fBrem_phi_DATA,h2_fBrem_phi_MC};
-  TH2F* h2_array_fBrem_pT[2]      = {h2_fBrem_pT_DATA,h2_fBrem_pT_MC};
-  TH2F* h2_array_fBrem_eta[2]     = {h2_fBrem_eta_DATA,h2_fBrem_eta_MC};
+  TH1F* h_array_fBrem[2][2]         = {{h_fBrem_B_DATA,h_fBrem_B_MC},{h_fBrem_E_DATA,h_fBrem_E_MC}};
+  TH1F* h_array_fBrem_Plus[2][2]    = {{h_fBrem_Plus_B_DATA,h_fBrem_Plus_B_MC},{h_fBrem_Plus_E_DATA,h_fBrem_Plus_E_MC}};
+  TH1F* h_array_fBrem_Minus[2][2]   = {{h_fBrem_Minus_B_DATA,h_fBrem_Minus_B_MC},{h_fBrem_Minus_E_DATA,h_fBrem_Minus_E_MC}};
+  TH1F* h_array_mass[2][2]          = {{h_mass_B_DATA,h_mass_B_MC},{h_mass_E_DATA,h_mass_E_MC}};
+  TH1F* h_array_mass_negFbrem[2][2] = {{h_mass_negFbrem_B_DATA,h_mass_negFbrem_B_MC},{h_mass_negFbrem_E_DATA,h_mass_negFbrem_E_MC}};
+  TH1F* h_array_el_energy[2][2]     = {{h_el_energy_DATA,h_el_energy_MC},{h_el_energy_DATA,h_el_energy_MC}}; //Same histo for barrel and endcaps
+  TH1F* h_array_PVz[2][2]           = {{h_PVz_DATA,h_PVz_MC},{h_PVz_DATA,h_PVz_MC}}; //Same histo for barrel and endcaps
+  TH2F* h2_array_fBrem_phi[2]       = {h2_fBrem_phi_DATA,h2_fBrem_phi_MC};
+  TH2F* h2_array_fBrem_pT[2]        = {h2_fBrem_pT_DATA,h2_fBrem_pT_MC};
+  TH2F* h2_array_fBrem_eta[2]       = {h2_fBrem_eta_DATA,h2_fBrem_eta_MC};
 
   //TH1F* h_pT_DATA  = new TH1F("h_pT_DATA","",47,33.,80.);
   //TH1I* h_nPV_DATA = new TH1I("h_nPV_DATA","",60,0.,60.);
   
   float i_range = -2.50;
   float iplus_range = -2.45;
-  map<std::string,TH1F> myMap_DATA;
-  map<std::string,TH1F> myMap_MC;
-  
+  map<std::string, std::pair<TH1F,TH1F> > myMap_DATA;
+  map<std::string, std::pair<TH1F,TH1F> > myMap_MC;
+
   for (int d = 0; d < 100; d++){
     i_range = roundf(i_range*100)/100;
     iplus_range = roundf(iplus_range*100)/100;
-    myMap_DATA[std::to_string(i_range)] = TH1F(TString::Format("DATA_h_fBrem_etaBins_%f", i_range) + TString::Format("_%f", iplus_range),"",50,0.,1.);
-    myMap_MC[std::to_string(i_range)]   = TH1F(TString::Format("MC_h_fBrem_etaBins_%f", i_range) + TString::Format("_%f", iplus_range),"",50,0.,1.);
+
+    myMap_DATA.insert(std::make_pair(std::to_string(i_range), std::make_pair( TH1F(TString::Format("DATA_h_fBrem_etaBins_%f", i_range) + TString::Format("_%f", iplus_range),"",200,-1.,1.), TH1F(TString::Format("DATA_h_energy_etaBins_%f", i_range) + TString::Format("_%f", iplus_range),"",217,33.,250.) )));
+
+    myMap_MC.insert(std::make_pair(std::to_string(i_range), std::make_pair( TH1F(TString::Format("MC_h_fBrem_etaBins_%f", i_range) + TString::Format("_%f", iplus_range),"",200,-1.,1.), TH1F(TString::Format("MC_h_energy_etaBins_%f", i_range) + TString::Format("_%f", iplus_range),"",217,33.,250.) )));
+
     i_range += 0.05;
     iplus_range += 0.05;
   }
@@ -140,10 +157,14 @@ void tree_reader() {
     tree_array[D_or_MC]->SetBranchStatus("*",0);
     tree_array[D_or_MC]->SetBranchStatus("passHltEle32DoubleEGWPTightGsf",1);
     tree_array[D_or_MC]->SetBranchStatus("passEGL1SingleEGOr",1);
-    tree_array[D_or_MC]->SetBranchStatus("passingMVA94Xwp80isoV2",1);
+    //tree_array[D_or_MC]->SetBranchStatus("passingMVA94Xwp80isoV2",1);
+    tree_array[D_or_MC]->SetBranchStatus("passingCutBasedTight94XV2",1);
+    //tree_array[D_or_MC]->SetBranchStatus("passingCutBasedLoose94XV2",1);
+    tree_array[D_or_MC]->SetBranchStatus("el_relPfLepIso03",1);
     tree_array[D_or_MC]->SetBranchStatus("el_pt",1);
     tree_array[D_or_MC]->SetBranchStatus("el_eta",1);
     tree_array[D_or_MC]->SetBranchStatus("el_phi",1);
+    tree_array[D_or_MC]->SetBranchStatus("el_e",1);
     tree_array[D_or_MC]->SetBranchStatus("tag_Ele_pt",1);
     tree_array[D_or_MC]->SetBranchStatus("tag_sc_eta",1);
     tree_array[D_or_MC]->SetBranchStatus("mass",1);
@@ -151,15 +172,33 @@ void tree_reader() {
     tree_array[D_or_MC]->SetBranchStatus("el_q",1);
     tree_array[D_or_MC]->SetBranchStatus("el_dz",1);
     tree_array[D_or_MC]->SetBranchStatus("event_nPV",1);
+    //tree_array[D_or_MC]->SetBranchStatus("event_PrimaryVertex_z",1);
+    // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleFull5x5SigmaIEtaIEtaCut",1);
+    // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleDEtaInSeedCut",1);
+    // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleHadronicOverEMEnergyScaledCut",1);
+    // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleRelPFIsoScaledCut",1);
+    // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleMissingHitsCut",1);
+    // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleConversionVetoCut",1);
     if (D_or_MC == 1) tree_array[D_or_MC]->SetBranchStatus("totWeight",1);
     
+    // int v_passVeto5x5sigma;
+    // int v_passVetoDEta;
+    // int v_passVetoHOverE;
+    // int v_passVetoPFIso;
+    // int v_passVetoMissingHits;
+    // int v_passVetoConversion;
+
     int v_passHltEle32;
     int v_passEGL1;
     int v_passMVA;
+    int v_passCutBasedID;
     int v_nPV;
+    float v_PVz;
+    float v_el_PFRelIso;
     float v_el_pt;
     float v_el_eta;
     float v_el_phi;
+    float v_el_energy;
     float v_el_fbrem;
     float v_el_q;
     float v_el_dz;
@@ -168,13 +207,25 @@ void tree_reader() {
     float v_Tag_sc_eta;
     float v_totWeight;
     
+    // tree_array[D_or_MC]->SetBranchAddress("passingCutBasedVeto94XV2GsfEleFull5x5SigmaIEtaIEtaCut",&v_passVeto5x5sigma);
+    // tree_array[D_or_MC]->SetBranchAddress("passingCutBasedVeto94XV2GsfEleDEtaInSeedCut",&v_passVetoDEta);
+    // tree_array[D_or_MC]->SetBranchAddress("passingCutBasedVeto94XV2GsfEleHadronicOverEMEnergyScaledCut",&v_passVetoHOverE);
+    // tree_array[D_or_MC]->SetBranchAddress("passingCutBasedVeto94XV2GsfEleRelPFIsoScaledCut",&v_passVetoPFIso);
+    // tree_array[D_or_MC]->SetBranchAddress("passingCutBasedVeto94XV2GsfEleMissingHitsCut",&v_passVetoMissingHits);
+    // tree_array[D_or_MC]->SetBranchAddress("passingCutBasedVeto94XV2GsfEleConversionVetoCut",&v_passVetoConversion);
+
     tree_array[D_or_MC]->SetBranchAddress("passHltEle32DoubleEGWPTightGsf",&v_passHltEle32);
     tree_array[D_or_MC]->SetBranchAddress("passEGL1SingleEGOr",&v_passEGL1);
-    tree_array[D_or_MC]->SetBranchAddress("passingMVA94Xwp80isoV2",&v_passMVA);
+    //tree_array[D_or_MC]->SetBranchAddress("passingMVA94Xwp80isoV2",&v_passMVA);
+    tree_array[D_or_MC]->SetBranchAddress("passingCutBasedTight94XV2",&v_passCutBasedID);
+    //tree_array[D_or_MC]->SetBranchAddress("passingCutBasedLoose94XV2",&v_passCutBasedID);
+    tree_array[D_or_MC]->SetBranchAddress("el_relPfLepIso03",&v_el_PFRelIso);
     tree_array[D_or_MC]->SetBranchAddress("event_nPV",&v_nPV);
+    //tree_array[D_or_MC]->SetBranchAddress("event_PrimaryVertex_z",&v_PVz);
     tree_array[D_or_MC]->SetBranchAddress("el_pt",&v_el_pt);
     tree_array[D_or_MC]->SetBranchAddress("el_eta",&v_el_eta);
     tree_array[D_or_MC]->SetBranchAddress("el_phi",&v_el_phi);
+    tree_array[D_or_MC]->SetBranchAddress("el_e",&v_el_energy);
     tree_array[D_or_MC]->SetBranchAddress("el_fbrem",&v_el_fbrem);
     tree_array[D_or_MC]->SetBranchAddress("el_q",&v_el_q);
     tree_array[D_or_MC]->SetBranchAddress("el_dz",&v_el_dz);
@@ -186,17 +237,20 @@ void tree_reader() {
     for (Long64_t n = 0; n < tree_array[D_or_MC]->GetEntriesFast(); n++){
       tree_array[D_or_MC]->GetEntry(n);
       
-      if (!(v_passHltEle32 == 1 && v_passEGL1 == 1 && v_passMVA == 1 && v_el_pt > 33. && fabs(v_el_eta) < 2.50 && fabs(v_el_dz) < 0.01)) continue;
+      //if (!( v_passHltEle32 == 1 && v_passEGL1 == 1 && v_passVeto5x5sigma == 1 && v_passVetoDEta == 1 && v_passVetoHOverE == 1 && v_passVetoPFIso == 1 && v_passVetoMissingHits == 1 && v_passVetoConversion == 1 && v_el_PFRelIso < 0.25 && v_el_pt > 33. && fabs(v_el_eta) < 2.50 && fabs(v_el_dz) < 0.01)) continue;
+      if (!(v_passHltEle32 == 1 && v_passEGL1 == 1 && v_passCutBasedID == 1 && v_el_PFRelIso < 0.25  && v_el_pt > 33. && fabs(v_el_eta) < 2.50 && fabs(v_el_dz) < 0.01)) continue;
+      //if (!(v_passHltEle32 == 1 && v_passEGL1 == 1 && v_passMVA == 1 && v_el_pt > 33. && fabs(v_el_eta) < 2.50 && fabs(v_el_dz) < 0.01)) continue;
       //if (!(v_passHltEle32 == 1 && v_passEGL1 == 1 && v_passMVA == 1 && v_el_pt > 28. && fabs(v_el_eta) < 2.50 && fabs(v_el_dz) < 0.01)) continue;
-      //if not (entry.passHltEle27WPTightGsf and entry.passingMVA94Xwp80isoV2 and entry.el_pt > 28 and math.fabs(entry.el_eta) < \ 2.50) continue;                                                                                                                  
-      if (!(v_Tag_el_pt > 35. && fabs(v_Tag_sc_eta) <= 2.1)) continue;
+      //if (!(v_passHltEle27 == 1 && v_passCutBasedID == 1 && v_el_PFRelIso < 0.25  && v_el_pt > 28. && fabs(v_el_eta) < 2.50 && fabs(v_el_dz) < 0.01)) continue;
+
+      if (!(v_Tag_el_pt > 35. && fabs(v_Tag_sc_eta) < 2.1)) continue;
       
       if (!(v_mass > 60. && v_mass < 120.)) continue;
       
-      if (!(v_el_fbrem > 0.)) continue;
+      //if (!(v_el_fbrem > 0.)) continue;
 
       //if (!(v_el_pt < 43.)) continue;
-      if (!(v_nPV > 23.)) continue;
+      //if (!(v_nPV > 23.)) continue;
       
       //Assign the right eta bin
       float eta_bin = AssignEtaBin(v_el_eta);
@@ -204,11 +258,13 @@ void tree_reader() {
       
       float EventWeight = 1.;
       if (D_or_MC == 0){
-	myMap_DATA.find(std::to_string(eta_bin))->second.Fill(v_el_fbrem);
+	myMap_DATA.find(std::to_string(eta_bin))->second.first.Fill(v_el_fbrem,EventWeight);
+	myMap_DATA.find(std::to_string(eta_bin))->second.second.Fill(v_el_energy,EventWeight);
       }
       else{
 	EventWeight = v_totWeight;
-	myMap_MC.find(std::to_string(eta_bin))->second.Fill(v_el_fbrem,EventWeight);
+	myMap_MC.find(std::to_string(eta_bin))->second.first.Fill(v_el_fbrem,EventWeight);
+	myMap_MC.find(std::to_string(eta_bin))->second.second.Fill(v_el_energy,EventWeight);
       }
 
       int B_or_E = -1;
@@ -216,7 +272,10 @@ void tree_reader() {
       else B_or_E = 1; //Corresponds to ENDCAPS
       
       h_array_fBrem[B_or_E][D_or_MC]->Fill(v_el_fbrem,EventWeight);
-      h_array_mass[B_or_E][D_or_MC]->Fill(v_mass,EventWeight);
+      h_array_el_energy[B_or_E][D_or_MC]->Fill(v_el_energy,EventWeight);
+      h_array_PVz[B_or_E][D_or_MC]->Fill(v_PVz,EventWeight);
+      if (v_el_fbrem >= 0.) h_array_mass[B_or_E][D_or_MC]->Fill(v_mass,EventWeight);
+      if (v_el_fbrem < 0.) h_array_mass_negFbrem[B_or_E][D_or_MC]->Fill(v_mass,EventWeight);
       if (v_el_q == 1) h_array_fBrem_Plus[B_or_E][D_or_MC]->Fill(v_el_fbrem,EventWeight);
       if (v_el_q == -1) h_array_fBrem_Minus[B_or_E][D_or_MC]->Fill(v_el_fbrem,EventWeight);
       h2_array_fBrem_phi[D_or_MC]->Fill(v_el_phi,v_el_fbrem,EventWeight);      
@@ -226,82 +285,98 @@ void tree_reader() {
   }
   
   gStyle->SetOptStat(0);
-  TFile* fileOut_plots = new TFile("histos/cpp/plots_highPU.root","RECREATE");
+  TFile* fileOut_plots = new TFile("histos/cpp/plots_CutBased_DYNLO_custom.root","RECREATE");
   fileOut_plots->cd();
 
   TCanvas* c_fBrem_B = new TCanvas();
   Prepare1DHisto(h_array_fBrem, 0, "f_{brem}", "Events/0.04"); // 0 stands for BARREL
-  c_fBrem_B->SaveAs("plots/cpp/fBrem_B_highPU.pdf");
+  c_fBrem_B->SaveAs("plots/cpp/fBrem_B_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_E = new TCanvas();
   Prepare1DHisto(h_array_fBrem, 1, "f_{brem}", "Events/0.04"); // 1 stands for BARREL
-  c_fBrem_E->SaveAs("plots/cpp/fBrem_E_highPU.pdf");
+  c_fBrem_E->SaveAs("plots/cpp/fBrem_E_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_Plus_B = new TCanvas();
   Prepare1DHisto(h_array_fBrem_Plus, 0, "f_{brem}", "Events/0.04");
-  c_fBrem_Plus_B->SaveAs("plots/cpp/fBrem_Plus_B_highPU.pdf");
+  c_fBrem_Plus_B->SaveAs("plots/cpp/fBrem_Plus_B_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_Minus_B = new TCanvas();
   Prepare1DHisto(h_array_fBrem_Minus, 0, "f_{brem}", "Events/0.04");
-  c_fBrem_Minus_B->SaveAs("plots/cpp/fBrem_Minus_B_highPU.pdf");
+  c_fBrem_Minus_B->SaveAs("plots/cpp/fBrem_Minus_B_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_Plus_E = new TCanvas();
   Prepare1DHisto(h_array_fBrem_Plus, 1, "f_{brem}", "Events/0.04");
-  c_fBrem_Plus_E->SaveAs("plots/cpp/fBrem_Plus_E_highPU.pdf");
+  c_fBrem_Plus_E->SaveAs("plots/cpp/fBrem_Plus_E_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_Minus_E = new TCanvas();
   Prepare1DHisto(h_array_fBrem_Minus, 1, "f_{brem}", "Events/0.04");
-  c_fBrem_Minus_E->SaveAs("plots/cpp/fBrem_Minus_E_highPU.pdf");
+  c_fBrem_Minus_E->SaveAs("plots/cpp/fBrem_Minus_E_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_mass_B = new TCanvas();
   Prepare1DHisto(h_array_mass, 0, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
-  c_mass_B->SaveAs("plots/cpp/mass_B_highPU.pdf");
+  c_mass_B->SaveAs("plots/cpp/mass_B_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_mass_E = new TCanvas();
   Prepare1DHisto(h_array_mass, 1, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
-  c_mass_E->SaveAs("plots/cpp/mass_E_highPU.pdf");
+  c_mass_E->SaveAs("plots/cpp/mass_E_CutBased_DYNLO_custom.pdf");
+
+  TCanvas* c_mass_negFbrem_B = new TCanvas();
+  Prepare1DHisto(h_array_mass_negFbrem, 0, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
+  c_mass_negFbrem_B->SaveAs("plots/cpp/mass_negFbrem_B_CutBased_DYNLO_custom.pdf");
+  
+  TCanvas* c_mass_negFbrem_E = new TCanvas();
+  Prepare1DHisto(h_array_mass_negFbrem, 1, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
+  c_mass_negFbrem_E->SaveAs("plots/cpp/mass_negFbrem_E_CutBased_DYNLO_custom.pdf");
+
+  TCanvas* c_el_energy = new TCanvas();
+  Prepare1DHisto(h_array_el_energy, 0, "E^{e} (GeV)", "Events/1.0 GeV");
+  c_el_energy->SaveAs("plots/cpp/el_energy_CutBased_DYNLO_custom.pdf");
+
+  TCanvas* c_PVz = new TCanvas();
+  Prepare1DHisto(h_array_PVz, 0, "PV z (cm)", "Events/0.5 cm");
+  c_PVz->SaveAs("plots/cpp/PVz_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_vs_phi_DATA = new TCanvas();
   Prepare2DHisto(h2_array_fBrem_phi, 0, "#phi^{e}", "f_{brem}"); // 0 stands for DATA
-  c_fBrem_vs_phi_DATA->SaveAs("plots/cpp/fBrem_vs_phi_DATA_highPU.pdf");
+  c_fBrem_vs_phi_DATA->SaveAs("plots/cpp/fBrem_vs_phi_DATA_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_vs_phi_MC = new TCanvas();
   Prepare2DHisto(h2_array_fBrem_phi, 1, "#phi^{e}", "f_{brem}"); // 1 stands for MC
-  c_fBrem_vs_phi_MC->SaveAs("plots/cpp/fBrem_vs_phi_MC_highPU.pdf");
+  c_fBrem_vs_phi_MC->SaveAs("plots/cpp/fBrem_vs_phi_MC_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_vs_pT_DATA = new TCanvas();
   Prepare2DHisto(h2_array_fBrem_pT, 0, "#it{p}_{T}^{e} (GeV)", "f_{brem}");
-  c_fBrem_vs_pT_DATA->SaveAs("plots/cpp/fBrem_vs_pT_DATA_highPU.pdf");
+  c_fBrem_vs_pT_DATA->SaveAs("plots/cpp/fBrem_vs_pT_DATA_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_vs_pT_MC = new TCanvas();
   Prepare2DHisto(h2_array_fBrem_pT, 1, "#it{p}_{T}^{e} (GeV)", "f_{brem}");
-  c_fBrem_vs_pT_MC->SaveAs("plots/cpp/fBrem_vs_pT_MC_highPU.pdf");
+  c_fBrem_vs_pT_MC->SaveAs("plots/cpp/fBrem_vs_pT_MC_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_vs_eta_DATA = new TCanvas();
   Prepare2DHisto(h2_array_fBrem_eta, 0, "#eta^{e}", "f_{brem}");
-  c_fBrem_vs_eta_DATA->SaveAs("plots/cpp/fBrem_vs_eta_DATA_highPU.pdf");
+  c_fBrem_vs_eta_DATA->SaveAs("plots/cpp/fBrem_vs_eta_DATA_CutBased_DYNLO_custom.pdf");
   
   TCanvas* c_fBrem_vs_eta_MC = new TCanvas();
   Prepare2DHisto(h2_array_fBrem_eta, 1, "#eta^{e}", "f_{brem}");
-  c_fBrem_vs_eta_MC->SaveAs("plots/cpp/fBrem_vs_eta_MC_highPU.pdf");
+  c_fBrem_vs_eta_MC->SaveAs("plots/cpp/fBrem_vs_eta_MC_CutBased_DYNLO_custom.pdf");
 
   //h_pT_DATA->Write();
   //h_nPV_DATA->Write();
   
-  TFile* fileOut = new TFile("histos/cpp/fBrem_notFolded_full2017_highPU.root","RECREATE");
+  TFile* fileOut = new TFile("histos/cpp/fBrem_notFolded_full2017_CutBased_DYNLO_custom.root","RECREATE");
   fileOut->cd();
   gDirectory->mkdir("DATA");
   fileOut->cd("DATA");
   for (float i = -2.50; i < 2.45; i+=0.05){
-    //std::cout << std::to_string(i) << std::endl;
-    myMap_DATA.find(std::to_string(roundf(i*100)/100))->second.Write();
+    myMap_DATA.find(std::to_string(roundf(i*100)/100))->second.first.Write();
+    myMap_DATA.find(std::to_string(roundf(i*100)/100))->second.second.Write();
   }
-  // std::cout << "ciao" << std::endl;
   fileOut->cd();
   gDirectory->mkdir("MC");
   fileOut->cd("MC");
   for (float i = -2.50; i < 2.45; i+=0.05){
-    myMap_MC.find(std::to_string(roundf(i*100)/100))->second.Write();
+    myMap_MC.find(std::to_string(roundf(i*100)/100))->second.first.Write();
+    myMap_MC.find(std::to_string(roundf(i*100)/100))->second.second.Write();
   }
   
   return;
