@@ -11,7 +11,7 @@ else:
 
 #fileIn = TFile("histos/xOverX0_2016.root")
 #fileIn = TFile("histos/fBrem_notFolded_2016.root")
-fileIn = TFile("histos/cpp/fBrem_notFolded_full2017_CutBased_DYNLO_PVz.root")
+fileIn = TFile("histos/cpp/fBrem_notFolded_full2017_CutBased_DYNLO.root")
 h_dict_DATA = dict()
 h_dict_MC = dict()
 h_dict_energy_DATA = dict()
@@ -149,7 +149,7 @@ c_graph = TCanvas()
 c_graph.SetGrid()
 
 pad1 = TPad("pad_values","",0,0.28,1,1.)
-pad2 = TPad("pad_diff",'',0,0,1,0.25)
+pad2 = TPad("pad_ratio",'',0,0,1,0.25)
 pad1.SetBottomMargin(0.01)
 pad1.SetBorderMode(0)
 pad1.SetBorderSize(0)
