@@ -101,11 +101,15 @@ void Prepare2DHisto(TH2F* histo2D[2], int D_or_MC, const char* title_x, const ch
 
 }
 
-void tree_reader() {
+void tree_reader_phi() {
     
   //TFile* fileIn_DATA = new TFile("/eos/cms/store/group/phys_egamma/tnpTuples/tomc/2020-05-20/UL2017/merged/Run2017B.root");
-  TFile* fileIn_DATA = new TFile("../ntuples/2017_DATA.root");
+  TFile* fileIn_DATA = new TFile("/eos/home-r/rselvati/ntuples_fBrem/2017_DATA.root");
   TFile* fileIn_MC   = new TFile("/eos/cms/store/group/phys_egamma/tnpTuples/tomc/2020-05-20/UL2017/merged/DY_NLO.root");
+
+  TFile* file_PVz_reweight_DATA = new TFile("PVz_weights_DATA.root");
+  TFile* file_PVz_reweight_MC   = new TFile("PVz_weights_MC.root");
+  TH1F* h_PVz_reweight = new TH1F();
   
   TTree* treeIn_DATA = (TTree*)fileIn_DATA->Get("tnpEleTrig/fitter_tree");
   TTree* treeIn_MC   = (TTree*)fileIn_MC->Get("tnpEleTrig/fitter_tree");
@@ -236,7 +240,7 @@ void tree_reader() {
     tree_array[D_or_MC]->SetBranchStatus("el_q",1);
     tree_array[D_or_MC]->SetBranchStatus("el_dz",1);
     tree_array[D_or_MC]->SetBranchStatus("event_nPV",1);
-    //tree_array[D_or_MC]->SetBranchStatus("event_PrimaryVertex_z",1);
+    tree_array[D_or_MC]->SetBranchStatus("event_PrimaryVertex_z",1);
     // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleFull5x5SigmaIEtaIEtaCut",1);
     // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleDEtaInSeedCut",1);
     // tree_array[D_or_MC]->SetBranchStatus("passingCutBasedVeto94XV2GsfEleHadronicOverEMEnergyScaledCut",1);
@@ -285,7 +289,7 @@ void tree_reader() {
     //tree_array[D_or_MC]->SetBranchAddress("passingCutBasedLoose94XV2",&v_passCutBasedID);
     tree_array[D_or_MC]->SetBranchAddress("el_relPfLepIso03",&v_el_PFRelIso);
     tree_array[D_or_MC]->SetBranchAddress("event_nPV",&v_nPV);
-    //tree_array[D_or_MC]->SetBranchAddress("event_PrimaryVertex_z",&v_PVz);
+    tree_array[D_or_MC]->SetBranchAddress("event_PrimaryVertex_z",&v_PVz);
     tree_array[D_or_MC]->SetBranchAddress("el_pt",&v_el_pt);
     tree_array[D_or_MC]->SetBranchAddress("el_eta",&v_el_eta);
     tree_array[D_or_MC]->SetBranchAddress("el_phi",&v_el_phi);
@@ -297,6 +301,9 @@ void tree_reader() {
     tree_array[D_or_MC]->SetBranchAddress("tag_sc_eta",&v_Tag_sc_eta);
     tree_array[D_or_MC]->SetBranchAddress("mass",&v_mass);
     if (D_or_MC == 1) tree_array[D_or_MC]->SetBranchAddress("totWeight",&v_totWeight);
+
+    if (D_or_MC == 0) h_PVz_reweight = (TH1F*)file_PVz_reweight_DATA->Get("h_reweight_PVz");
+    else h_PVz_reweight = (TH1F*)file_PVz_reweight_MC->Get("h_reweight_PVz");
     
     for (Long64_t n = 0; n < tree_array[D_or_MC]->GetEntriesFast(); n++){
       tree_array[D_or_MC]->GetEntry(n);
@@ -327,29 +334,21 @@ void tree_reader() {
       float phi_bin = AssignPhiBin(v_el_phi);
 
       if (phi_bin == -9999.) break;
-      //cout << "**********\n";
-     
-      //eta_bin = roundf(eta_bin*100)/100;
-      //phi_bin = roundf(phi_bin*100)/100;
+
       string map_index = to_string(eta_bin) + "_" + to_string(phi_bin);
       float EventWeight = 1.;
-      //cout << v_el_eta << endl;
-      //cout << map_index << endl;
-      //cout << "giovanna" << endl;
+
+      //PVz_reweighting
+      EventWeight = EventWeight*(h_PVz_reweight->GetBinContent(h_PVz_reweight->FindBin(v_PVz)));
 
       if (D_or_MC == 0){
-	//cout << "Paola" << endl;
-	
-	//cout << v_el_eta << "  " << map_index << endl;
       	myMap_fBrem.find(map_index)->second.first.Fill(v_el_fbrem,EventWeight);
-	//cout << "Carla" << endl;
       	myMap_energy.find(map_index)->second.first.Fill(v_el_energy,EventWeight);
-	//cout << "Piera" << endl;
       	myMap_xOverX0.find(map_index)->second.first.Fill(-(log(1 - v_el_fbrem)),EventWeight);
-	//cout << "Nina" << endl;
       }
       else{
       	EventWeight = v_totWeight;
+	EventWeight = EventWeight*(h_PVz_reweight->GetBinContent(h_PVz_reweight->FindBin(v_PVz)));
       	myMap_fBrem.find(map_index)->second.second.Fill(v_el_fbrem,EventWeight);
       	myMap_energy.find(map_index)->second.second.Fill(v_el_energy,EventWeight);
       	myMap_xOverX0.find(map_index)->second.second.Fill(-(log(1 - v_el_fbrem)),EventWeight);
@@ -451,7 +450,7 @@ void tree_reader() {
   //h_pT_DATA->Write();
   //h_nPV_DATA->Write();
   
-  TFile* fileOut = new TFile("histos/17_06_2021/fBrem_etaFolded_EtaPhiBins.root","RECREATE");
+  TFile* fileOut = new TFile("histos/01_07_2021/fBrem_etaFolded_EtaPhiBins_PVz_reweighted.root","RECREATE");
   fileOut->cd();
   gDirectory->mkdir("DATA");
   fileOut->cd("DATA");

@@ -4,7 +4,8 @@ import numpy as np
 from array import array
 import sys
 
-fileIn = TFile("histos/17_06_2021/fBrem_etaFolded_EtaPhiBins.root")
+#fileIn = TFile("histos/17_06_2021/fBrem_etaFolded_EtaPhiBins.root")
+fileIn = TFile("histos/01_07_2021/fBrem_etaFolded_EtaPhiBins_PVz_reweighted.root")
 h_dict_DATA = dict()
 h_dict_MC = dict()
 h_dict_energy_DATA = dict()
@@ -31,6 +32,11 @@ dict_fBrem_MC   = dict()
 dict_fBrem_err_DATA = dict()
 dict_fBrem_err_MC   = dict()
 
+dict_calib_xOverX0_DATA = dict()
+dict_calib_xOverX0_MC = dict()
+dict_calib_xOverX0_err_DATA = dict()
+dict_calib_xOverX0_err_MC = dict()
+
 
 calibration_file = TFile("Calibration_t1.root")
 
@@ -50,47 +56,57 @@ for i in np.arange(-2.50,0.00,0.05):
         h_dict_DATA[str_i+str_p] = fileIn.Get("DATA/DATA_h_fBrem_etaBin_" + str_i + "_" + str_iplus + "_phiBin_" + str_p + "_" + str_pplus)
         h_dict_MC[str_i+str_p]   = fileIn.Get("MC/MC_h_fBrem_etaBin_" + str_i + "_" + str_iplus + "_phiBin_" + str_p + "_" + str_pplus)
 
-        h_dict_energy_DATA[i] = fileIn.Get("DATA/DATA_h_energy_etaBin_" + str_i + "_" + str_iplus + "_phiBin_" + str_p + "_" + str_pplus)
-        h_dict_energy_MC[i]   = fileIn.Get("MC/MC_h_energy_etaBin_" + str_i + "_" + str_iplus + "_phiBin_" + str_p + "_" + str_pplus)
+        h_dict_energy_DATA[str_i+str_p] = fileIn.Get("DATA/DATA_h_energy_etaBin_" + str_i + "_" + str_iplus + "_phiBin_" + str_p + "_" + str_pplus)
+        h_dict_energy_MC[str_i+str_p]   = fileIn.Get("MC/MC_h_energy_etaBin_" + str_i + "_" + str_iplus + "_phiBin_" + str_p + "_" + str_pplus)
 
         mean_DATA = h_dict_DATA[str_i+str_p].GetMean()
         mean_MC   = h_dict_MC[str_i+str_p].GetMean()
         uncert_mean_DATA = h_dict_DATA[str_i+str_p].GetStdDev()/math.sqrt(h_dict_DATA[str_i+str_p].GetEntries()) #std.dev/sqrt(N)
         uncert_mean_MC   = h_dict_MC[str_i+str_p].GetStdDev()/math.sqrt(h_dict_MC[str_i+str_p].GetEntries()) #std.dev/sqrt(N)
 
-        # xOverX0_DATA = -(math.log(1 - mean_DATA))
-        # xOverX0_MC   = -(math.log(1 - mean_MC))
-        # uncert_xOverX0_DATA = uncert_mean_DATA/(1. - mean_DATA) #error propagation
-        # uncert_xOverX0_MC   = uncert_mean_MC/(1. - mean_MC) #error propagation
+        xOverX0_DATA = -(math.log(1 - mean_DATA))
+        xOverX0_MC   = -(math.log(1 - mean_MC))
+        uncert_xOverX0_DATA = uncert_mean_DATA/(1. - mean_DATA) #error propagation
+        uncert_xOverX0_MC   = uncert_mean_MC/(1. - mean_MC) #error propagation
 
-        # mean_energy_DATA = h_dict_energy_DATA[i].GetMean()
-        # mean_energy_MC   = h_dict_energy_MC[i].GetMean()
+        mean_energy_DATA = h_dict_energy_DATA[str_i+str_p].GetMean()
+        mean_energy_MC   = h_dict_energy_MC[str_i+str_p].GetMean()
         
-        # #Choose the most appropriate calibration file
-        # if math.fabs(mean_energy_DATA - 25.) < math.fabs(mean_energy_DATA - 50.):
-        #     gr_t1 = calibration_file.Get("Calibration_graph_t1_25_GeV")
-        # elif math.fabs(mean_energy_DATA - 25.) > math.fabs(mean_energy_DATA - 50.) and math.fabs(mean_energy_DATA - 50.) < math.fabs(mean_energy_DATA - 100.):
-        #     gr_t1 = calibration_file.Get("Calibration_graph_t1_50_GeV")
-        # elif math.fabs(mean_energy_DATA - 50.) > math.fabs(mean_energy_DATA - 100.) and math.fabs(mean_energy_DATA - 100.) < math.fabs(mean_energy_DATA - 200.):
-        #     gr_t1 = calibration_file.Get("Calibration_graph_t1_100_GeV")
-        # elif math.fabs(mean_energy_DATA - 100.) > math.fabs(mean_energy_DATA - 200.):
-        #     gr_t1 = calibration_file.Get("Calibration_graph_t1_200_GeV")
+        #Choose the most appropriate calibration file
+        if math.fabs(mean_energy_DATA - 25.) < math.fabs(mean_energy_DATA - 50.):
+            gr_t1 = calibration_file.Get("Calibration_graph_t1_25_GeV")
+        elif math.fabs(mean_energy_DATA - 25.) > math.fabs(mean_energy_DATA - 50.) and math.fabs(mean_energy_DATA - 50.) < math.fabs(mean_energy_DATA - 100.):
+            gr_t1 = calibration_file.Get("Calibration_graph_t1_50_GeV")
+        elif math.fabs(mean_energy_DATA - 50.) > math.fabs(mean_energy_DATA - 100.) and math.fabs(mean_energy_DATA - 100.) < math.fabs(mean_energy_DATA - 200.):
+            gr_t1 = calibration_file.Get("Calibration_graph_t1_100_GeV")
+        elif math.fabs(mean_energy_DATA - 100.) > math.fabs(mean_energy_DATA - 200.):
+            gr_t1 = calibration_file.Get("Calibration_graph_t1_200_GeV")
 
-        # dict_calib_xOverX0_DATA[str_i+str_p] = gr_t1.Eval(xOverX0_DATA)
-        # dict_calib_xOverX0_MC[str_i+str_p]   = gr_t1.Eval(xOverX0_MC)
-        
         if str_p == "-3.140000":
-            dict_fBrem_DATA[str_i+str_p] = mean_DATA 
-            dict_fBrem_MC[str_i+str_p] = mean_MC
-            dict_fBrem_err_DATA[str_i+str_p] = uncert_mean_DATA
-            dict_fBrem_err_MC[str_i+str_p] = uncert_mean_MC
+            dict_calib_xOverX0_DATA[str_i+str_p] = gr_t1.Eval(xOverX0_DATA)
+            dict_calib_xOverX0_MC[str_i+str_p]   = gr_t1.Eval(xOverX0_MC)
+            dict_calib_xOverX0_err_DATA[str_i+str_p] = uncert_xOverX0_DATA
+            dict_calib_xOverX0_err_MC[str_i+str_p]   = uncert_xOverX0_MC
 
         if str_p == "-0.000000":
-            dict_fBrem_DATA[str_i+"-3.140000"] = (mean_DATA - dict_fBrem_DATA[str_i+"-3.140000"])/(mean_DATA + dict_fBrem_DATA[str_i+"-3.140000"])       
-            dict_fBrem_MC[str_i+"-3.140000"] = (mean_MC - dict_fBrem_MC[str_i+"-3.140000"])/(mean_MC + dict_fBrem_MC[str_i+"-3.140000"])
+            #Calculation of uncertainties must happen before calculation of the central values
+            dict_calib_xOverX0_err_DATA[str_i+"-3.140000"] = (2./(dict_calib_xOverX0_DATA[str_i+"-3.140000"] + gr_t1.Eval(xOverX0_DATA))**2)*math.sqrt((gr_t1.Eval(xOverX0_DATA)*dict_calib_xOverX0_err_DATA[str_i+"-3.140000"])**2 + ( dict_calib_xOverX0_DATA[str_i+"-3.140000"]*uncert_xOverX0_DATA)**2)
+            dict_calib_xOverX0_err_MC[str_i+"-3.140000"] = (2./(dict_calib_xOverX0_MC[str_i+"-3.140000"] + gr_t1.Eval(xOverX0_MC))**2)*math.sqrt((gr_t1.Eval(xOverX0_MC)*dict_calib_xOverX0_err_MC[str_i+"-3.140000"])**2 + ( dict_calib_xOverX0_MC[str_i+"-3.140000"]*uncert_xOverX0_MC)**2)
 
-            dict_fBrem_err_DATA[str_i+"-3.140000"] = (2./(dict_fBrem_DATA[str_i+"-3.140000"] + mean_DATA)**2)*math.sqrt((mean_DATA*dict_fBrem_err_DATA[str_i+"-3.140000"])**2 + ( dict_fBrem_DATA[str_i+"-3.140000"]*uncert_mean_DATA)**2)
-            dict_fBrem_err_MC[str_i+"-3.140000"] = (2./(dict_fBrem_MC[str_i+"-3.140000"] + mean_MC)**2)*math.sqrt((mean_MC*dict_fBrem_err_MC[str_i+"-3.140000"])**2 + ( dict_fBrem_MC[str_i+"-3.140000"]*uncert_mean_MC)**2)
+            dict_calib_xOverX0_DATA[str_i+"-3.140000"] = (gr_t1.Eval(xOverX0_DATA) - dict_calib_xOverX0_DATA[str_i+"-3.140000"])/(gr_t1.Eval(xOverX0_DATA) + dict_calib_xOverX0_DATA[str_i+"-3.140000"])       
+            dict_calib_xOverX0_MC[str_i+"-3.140000"] = (gr_t1.Eval(xOverX0_MC) - dict_calib_xOverX0_MC[str_i+"-3.140000"])/(gr_t1.Eval(xOverX0_MC) + dict_calib_xOverX0_MC[str_i+"-3.140000"])        
+        # if str_p == "-3.140000":
+        #     dict_fBrem_DATA[str_i+str_p] = mean_DATA 
+        #     dict_fBrem_MC[str_i+str_p] = mean_MC
+        #     dict_fBrem_err_DATA[str_i+str_p] = uncert_mean_DATA
+        #     dict_fBrem_err_MC[str_i+str_p] = uncert_mean_MC
+
+        # if str_p == "-0.000000":
+        #     dict_fBrem_DATA[str_i+"-3.140000"] = (mean_DATA - dict_fBrem_DATA[str_i+"-3.140000"])/(mean_DATA + dict_fBrem_DATA[str_i+"-3.140000"])       
+        #     dict_fBrem_MC[str_i+"-3.140000"] = (mean_MC - dict_fBrem_MC[str_i+"-3.140000"])/(mean_MC + dict_fBrem_MC[str_i+"-3.140000"])
+
+        #     dict_fBrem_err_DATA[str_i+"-3.140000"] = (2./(dict_fBrem_DATA[str_i+"-3.140000"] + mean_DATA)**2)*math.sqrt((mean_DATA*dict_fBrem_err_DATA[str_i+"-3.140000"])**2 + ( dict_fBrem_DATA[str_i+"-3.140000"]*uncert_mean_DATA)**2)
+        #     dict_fBrem_err_MC[str_i+"-3.140000"] = (2./(dict_fBrem_MC[str_i+"-3.140000"] + mean_MC)**2)*math.sqrt((mean_MC*dict_fBrem_err_MC[str_i+"-3.140000"])**2 + ( dict_fBrem_MC[str_i+"-3.140000"]*uncert_mean_MC)**2)
 
 
 
@@ -100,14 +116,14 @@ for l in np.arange(-2.50,0.00,0.05):
     #str_i = str_i.replace("-","")
     x_fBrem_asymmetry.append(-l-0.025)
     x_fBrem_asymmetry_err.append(0.)
-    y_fBrem_asymmetry_DATA.append(dict_fBrem_DATA[str_i+"-3.140000"])
-    y_fBrem_asymmetry_MC.append(dict_fBrem_MC[str_i+"-3.140000"])
-    y_fBrem_asymmetry_err_DATA.append(dict_fBrem_err_DATA[str_i+"-3.140000"])
-    y_fBrem_asymmetry_err_MC.append(dict_fBrem_err_MC[str_i+"-3.140000"])
+    y_fBrem_asymmetry_DATA.append(dict_calib_xOverX0_DATA[str_i+"-3.140000"])
+    y_fBrem_asymmetry_MC.append(dict_calib_xOverX0_MC[str_i+"-3.140000"])
+    y_fBrem_asymmetry_err_DATA.append(dict_calib_xOverX0_err_DATA[str_i+"-3.140000"])
+    y_fBrem_asymmetry_err_MC.append(dict_calib_xOverX0_err_MC[str_i+"-3.140000"])
     
-    #print "dict_fBrem_DATA[i]: ", dict_fBrem_DATA[str_i], "  dict_fBrem_MC[i]: ", dict_fBrem_MC[str_i]
-    y_diff.append(dict_fBrem_DATA[str_i+"-3.140000"] - dict_fBrem_MC[str_i+"-3.140000"])
-    y_err_diff.append(math.sqrt(dict_fBrem_err_DATA[str_i+"-3.140000"]**2 + dict_fBrem_err_MC[str_i+"-3.140000"]**2))
+    #print "dict_calib_xOverX0_DATA[i]: ", dict_calib_xOverX0_DATA[str_i], "  dict_calib_xOverX0_MC[i]: ", dict_calib_xOverX0_MC[str_i]
+    y_diff.append(dict_calib_xOverX0_DATA[str_i+"-3.140000"] - dict_calib_xOverX0_MC[str_i+"-3.140000"])
+    y_err_diff.append(math.sqrt(dict_calib_xOverX0_err_DATA[str_i+"-3.140000"]**2 + dict_calib_xOverX0_err_MC[str_i+"-3.140000"]**2))
 
     
 c_asymmetry = TCanvas()
@@ -136,7 +152,8 @@ g_fBrem_asymmetry_DATA.SetLineColor(2)
 g_fBrem_asymmetry_DATA.SetTitle("")
 g_fBrem_asymmetry_DATA.GetXaxis().SetTitle("|#eta^{e}|")
 g_fBrem_asymmetry_DATA.GetXaxis().SetLabelSize(0)
-g_fBrem_asymmetry_DATA.GetYaxis().SetTitle("(f_{brem}^{+} - f_{brem}^{-}) / (f_{brem}^{+} + f_{brem}^{-})")
+#g_fBrem_asymmetry_DATA.GetYaxis().SetTitle("(f_{brem}^{+} - f_{brem}^{-}) / (f_{brem}^{+} + f_{brem}^{-})")
+g_fBrem_asymmetry_DATA.GetYaxis().SetTitle("(t_{1}^{+} - t_{1}^{-}) / (t_{1}^{+} + t_{1}^{-})")
 g_fBrem_asymmetry_DATA.GetYaxis().SetTitleOffset(1.0)
 g_fBrem_asymmetry_DATA.GetYaxis().SetTitleSize(0.05)
 g_fBrem_asymmetry_DATA.GetYaxis().SetRangeUser(-0.05,0.05)
@@ -149,7 +166,8 @@ g_fBrem_asymmetry_MC.SetLineColor(kGreen+1)
 g_fBrem_asymmetry_MC.SetTitle("")
 g_fBrem_asymmetry_MC.GetXaxis().SetTitle("|#eta^{e}|")
 g_fBrem_asymmetry_MC.GetXaxis().SetLabelSize(0)
-g_fBrem_asymmetry_MC.GetYaxis().SetTitle("(f_{brem}^{+} - f_{brem}^{-}) / (f_{brem}^{+} + f_{brem}^{-})")
+#g_fBrem_asymmetry_MC.GetYaxis().SetTitle("(f_{brem}^{+} - f_{brem}^{-}) / (f_{brem}^{+} + f_{brem}^{-})")
+g_fBrem_asymmetry_MC.GetYaxis().SetTitle("(t_{1}^{+} - t_{1}^{-}) / (t_{1}^{+} + t_{1}^{-})")
 g_fBrem_asymmetry_MC.GetYaxis().SetTitleOffset(1.0)
 g_fBrem_asymmetry_MC.GetYaxis().SetTitleSize(0.05)
 g_fBrem_asymmetry_MC.GetYaxis().SetRangeUser(-0.05,0.05)
@@ -179,7 +197,7 @@ g_diff.SetTitle("")
 g_diff.GetXaxis().SetTitle("|#eta^{e}|")
 g_diff.GetYaxis().SetTitle("Data-MC")
 #g_diff.GetYaxis().SetRangeUser(-0.2,0.2)
-g_diff.GetYaxis().SetRangeUser(-0.05,0.05)
+g_diff.GetYaxis().SetRangeUser(-0.07,0.07)
 g_diff.GetXaxis().SetLabelSize(0.13)
 g_diff.GetXaxis().SetTitleSize(0.15)
 g_diff.GetXaxis().SetTitleOffset(0.7)
@@ -194,6 +212,6 @@ g_diff.Draw("AP")
 line_on_zero.Draw("SAME")
 
 
-c_asymmetry.SaveAs("plots/fBrem_phi_asymmetry.pdf")
+c_asymmetry.SaveAs("plots/t1_phi_asymmetry.pdf")
 
 raw_input()

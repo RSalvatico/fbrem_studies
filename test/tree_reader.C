@@ -78,9 +78,15 @@ void Prepare2DHisto(TH2F* histo2D[2], int D_or_MC, const char* title_x, const ch
 void tree_reader() {
     
   //TFile* fileIn_DATA = new TFile("/eos/cms/store/group/phys_egamma/tnpTuples/tomc/2020-05-20/UL2017/merged/Run2017B.root");
-  TFile* fileIn_DATA = new TFile("../ntuples/2017_DATA.root");
+  TFile* fileIn_DATA = new TFile("/eos/home-r/rselvati/ntuples_fBrem/2017_DATA.root");
   TFile* fileIn_MC   = new TFile("/eos/cms/store/group/phys_egamma/tnpTuples/tomc/2020-05-20/UL2017/merged/DY_NLO.root");
-  
+
+  //TFile* fileIn_MC   = new TFile("/eos/cms/store/group/phys_egamma/tnpTuples/rasharma/2021-02-10/UL2016postVFP/merged/DY_NLO_L1matched.root");
+
+  TFile* file_PVz_reweight_DATA = new TFile("PVz_weights_DATA.root");
+  TFile* file_PVz_reweight_MC   = new TFile("PVz_weights_MC.root");
+  TH1F* h_PVz_reweight = new TH1F();
+
   TTree* treeIn_DATA = (TTree*)fileIn_DATA->Get("tnpEleTrig/fitter_tree");
   TTree* treeIn_MC   = (TTree*)fileIn_MC->Get("tnpEleTrig/fitter_tree");
   
@@ -114,15 +120,20 @@ void tree_reader() {
   TH1F* h_el_energy_DATA = new TH1F("h_el_energy_DATA","",270,30.,300.);
   TH1F* h_el_energy_MC   = new TH1F("h_el_energy_MC","",270,30.,300.);
 
+  TH1F* h_el_pT_DATA = new TH1F("h_el_pT_DATA","",117,33.,150.);
+  TH1F* h_el_pT_MC   = new TH1F("h_el_pT_MC","",117,33.,150.);
+
   TH1F* h_PVz_DATA = new TH1F("h_PVz_DATA","",60,-15.,15.);
   TH1F* h_PVz_MC   = new TH1F("h_PVz_MC","",60,-15.,15.);
 
-  TH2F* h2_fBrem_phi_DATA = new TH2F("h2_fBrem_phi_DATA","",100,-3.14,3.14,50,0.,1.);
-  TH2F* h2_fBrem_phi_MC   = new TH2F("h2_fBrem_phi_MC","",100,-3.14,3.14,50,0.,1.);
-  TH2F* h2_fBrem_pT_DATA  = new TH2F("h2_fBrem_pT_DATA","",50,33.,80.,50,0.,1.);
-  TH2F* h2_fBrem_pT_MC    = new TH2F("h2_fBrem_pT_MC","",50,33.,80.,50,0.,1.);
-  TH2F* h2_fBrem_eta_DATA = new TH2F("h2_fBrem_eta_DATA","",100,-2.5,2.5,50,0.,1.);
-  TH2F* h2_fBrem_eta_MC   = new TH2F("h2_fBrem_eta_MC","",100,-2.5,2.5,50,0.,1.);
+  TH2F* h2_fBrem_phi_DATA   = new TH2F("h2_fBrem_phi_DATA","",100,-3.14,3.14,50,0.,1.);
+  TH2F* h2_fBrem_phi_MC     = new TH2F("h2_fBrem_phi_MC","",100,-3.14,3.14,50,0.,1.);
+  TH2F* h2_fBrem_pT_DATA    = new TH2F("h2_fBrem_pT_DATA","",50,33.,80.,50,0.,1.);
+  TH2F* h2_fBrem_pT_MC      = new TH2F("h2_fBrem_pT_MC","",50,33.,80.,50,0.,1.);
+  TH2F* h2_fBrem_eta_DATA   = new TH2F("h2_fBrem_eta_DATA","",100,-2.5,2.5,50,0.,1.);
+  TH2F* h2_fBrem_eta_MC     = new TH2F("h2_fBrem_eta_MC","",100,-2.5,2.5,50,0.,1.);
+  TH2F* h2_etaDiff_PVz_DATA = new TH2F("h2_etaDiff_PVz_DATA","",30,-15.,15.,40,-0.2,0.2);
+  TH2F* h2_etaDiff_PVz_MC   = new TH2F("h2_etaDiff_PVz_MC","",30,-15.,15.,40,-0.2,0.2);
 
   TH1F* h_array_fBrem[2][2]         = {{h_fBrem_B_DATA,h_fBrem_B_MC},{h_fBrem_E_DATA,h_fBrem_E_MC}};
   TH1F* h_array_fBrem_Plus[2][2]    = {{h_fBrem_Plus_B_DATA,h_fBrem_Plus_B_MC},{h_fBrem_Plus_E_DATA,h_fBrem_Plus_E_MC}};
@@ -130,10 +141,12 @@ void tree_reader() {
   TH1F* h_array_mass[2][2]          = {{h_mass_B_DATA,h_mass_B_MC},{h_mass_E_DATA,h_mass_E_MC}};
   TH1F* h_array_mass_negFbrem[2][2] = {{h_mass_negFbrem_B_DATA,h_mass_negFbrem_B_MC},{h_mass_negFbrem_E_DATA,h_mass_negFbrem_E_MC}};
   TH1F* h_array_el_energy[2][2]     = {{h_el_energy_DATA,h_el_energy_MC},{h_el_energy_DATA,h_el_energy_MC}}; //Same histo for barrel and endcaps
+  TH1F* h_array_el_pT[2][2]         = {{h_el_pT_DATA,h_el_pT_MC},{h_el_pT_DATA,h_el_pT_MC}}; //Same histo for barrel and endcaps
   TH1F* h_array_PVz[2][2]           = {{h_PVz_DATA,h_PVz_MC},{h_PVz_DATA,h_PVz_MC}}; //Same histo for barrel and endcaps
   TH2F* h2_array_fBrem_phi[2]       = {h2_fBrem_phi_DATA,h2_fBrem_phi_MC};
   TH2F* h2_array_fBrem_pT[2]        = {h2_fBrem_pT_DATA,h2_fBrem_pT_MC};
   TH2F* h2_array_fBrem_eta[2]       = {h2_fBrem_eta_DATA,h2_fBrem_eta_MC};
+  TH2F* h2_array_etaDiff_PVz[2]     = {h2_etaDiff_PVz_DATA,h2_etaDiff_PVz_MC};
 
   //TH1F* h_pT_DATA  = new TH1F("h_pT_DATA","",47,33.,80.);
   //TH1I* h_nPV_DATA = new TH1I("h_nPV_DATA","",60,0.,60.);
@@ -187,6 +200,7 @@ void tree_reader() {
     tree_array[D_or_MC]->SetBranchStatus("el_relPfLepIso03",1);
     tree_array[D_or_MC]->SetBranchStatus("el_pt",1);
     tree_array[D_or_MC]->SetBranchStatus("el_eta",1);
+    tree_array[D_or_MC]->SetBranchStatus("el_sc_eta",1);
     tree_array[D_or_MC]->SetBranchStatus("el_phi",1);
     tree_array[D_or_MC]->SetBranchStatus("el_e",1);
     tree_array[D_or_MC]->SetBranchStatus("tag_Ele_pt",1);
@@ -221,6 +235,7 @@ void tree_reader() {
     float v_el_PFRelIso;
     float v_el_pt;
     float v_el_eta;
+    float v_el_sc_eta;
     float v_el_phi;
     float v_el_energy;
     float v_el_fbrem;
@@ -248,6 +263,7 @@ void tree_reader() {
     tree_array[D_or_MC]->SetBranchAddress("event_PrimaryVertex_z",&v_PVz);
     tree_array[D_or_MC]->SetBranchAddress("el_pt",&v_el_pt);
     tree_array[D_or_MC]->SetBranchAddress("el_eta",&v_el_eta);
+    tree_array[D_or_MC]->SetBranchAddress("el_sc_eta",&v_el_sc_eta);
     tree_array[D_or_MC]->SetBranchAddress("el_phi",&v_el_phi);
     tree_array[D_or_MC]->SetBranchAddress("el_e",&v_el_energy);
     tree_array[D_or_MC]->SetBranchAddress("el_fbrem",&v_el_fbrem);
@@ -257,6 +273,9 @@ void tree_reader() {
     tree_array[D_or_MC]->SetBranchAddress("tag_sc_eta",&v_Tag_sc_eta);
     tree_array[D_or_MC]->SetBranchAddress("mass",&v_mass);
     if (D_or_MC == 1) tree_array[D_or_MC]->SetBranchAddress("totWeight",&v_totWeight);
+
+    if (D_or_MC == 0) h_PVz_reweight = (TH1F*)file_PVz_reweight_DATA->Get("h_reweight_PVz");
+    else h_PVz_reweight = (TH1F*)file_PVz_reweight_MC->Get("h_reweight_PVz");
     
     for (Long64_t n = 0; n < tree_array[D_or_MC]->GetEntriesFast(); n++){
       tree_array[D_or_MC]->GetEntry(n);
@@ -272,7 +291,7 @@ void tree_reader() {
       if (!(v_mass > 60. && v_mass < 120.)) continue;
       
       //if (!(v_el_fbrem > 0.)) continue;
-
+      //if(!(v_PVz > 0.)) continue;
       //if (!(v_el_pt < 43.)) continue;
       //if (!(v_nPV > 23.)) continue;
       
@@ -283,6 +302,10 @@ void tree_reader() {
       //Fill the maps
       string map_index = to_string(eta_bin);
       float EventWeight = 1.;
+      
+      //PVz_reweighting
+      //EventWeight = EventWeight*(h_PVz_reweight->GetBinContent(h_PVz_reweight->FindBin(v_PVz)));
+
       if (D_or_MC == 0){
 	myMap_fBrem.find(map_index)->second.first.Fill(v_el_fbrem,EventWeight);
 	myMap_energy.find(map_index)->second.first.Fill(v_el_energy,EventWeight);
@@ -291,6 +314,7 @@ void tree_reader() {
       }
       else{
 	EventWeight = v_totWeight;
+	//EventWeight = EventWeight*(h_PVz_reweight->GetBinContent(h_PVz_reweight->FindBin(v_PVz)));
 	myMap_fBrem.find(map_index)->second.second.Fill(v_el_fbrem,EventWeight);
 	myMap_energy.find(map_index)->second.second.Fill(v_el_energy,EventWeight);
 	myMap_xOverX0.find(map_index)->second.second.Fill(-(log(1 - v_el_fbrem)),EventWeight);
@@ -304,6 +328,7 @@ void tree_reader() {
       //Fill the histograms stored in arrays
       h_array_fBrem[B_or_E][D_or_MC]->Fill(v_el_fbrem,EventWeight);
       h_array_el_energy[B_or_E][D_or_MC]->Fill(v_el_energy,EventWeight);
+      h_array_el_pT[B_or_E][D_or_MC]->Fill(v_el_pt,EventWeight);
       h_array_PVz[B_or_E][D_or_MC]->Fill(v_PVz,EventWeight);
       if (v_el_fbrem >= 0.) h_array_mass[B_or_E][D_or_MC]->Fill(v_mass,EventWeight);
       if (v_el_fbrem < 0.) h_array_mass_negFbrem[B_or_E][D_or_MC]->Fill(v_mass,EventWeight);
@@ -312,89 +337,102 @@ void tree_reader() {
       h2_array_fBrem_phi[D_or_MC]->Fill(v_el_phi,v_el_fbrem,EventWeight);      
       h2_array_fBrem_pT[D_or_MC]->Fill(v_el_pt,v_el_fbrem,EventWeight);      
       h2_array_fBrem_eta[D_or_MC]->Fill(v_el_eta,v_el_fbrem,EventWeight);      
+      h2_array_etaDiff_PVz[D_or_MC]->Fill(v_PVz,(v_el_eta-v_el_sc_eta),EventWeight);      
     }
   }
   
-  // gStyle->SetOptStat(0);
-  // TFile* fileOut_plots = new TFile("histos/02_06_2021/plots_CutBased_DYNLO_custom.root","RECREATE");
-  // fileOut_plots->cd();
+  // // gStyle->SetOptStat(0);
+  TFile* fileOut_plots = new TFile("histos/01_07_2021/plots_CutBased_DYNLO.root","RECREATE");
+  fileOut_plots->cd();
 
-  // TCanvas* c_fBrem_B = new TCanvas();
-  // Prepare1DHisto(h_array_fBrem, 0, "f_{brem}", "Events/0.04"); // 0 stands for BARREL
-  // c_fBrem_B->SaveAs("plots/02_06_2021/fBrem_B_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_B = new TCanvas();
+  Prepare1DHisto(h_array_fBrem, 0, "f_{brem}", "Events/0.04"); // 0 stands for BARREL
+  c_fBrem_B->SaveAs("plots/01_07_2021/fBrem_B_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_E = new TCanvas();
-  // Prepare1DHisto(h_array_fBrem, 1, "f_{brem}", "Events/0.04"); // 1 stands for ENDCAP
-  // c_fBrem_E->SaveAs("plots/02_06_2021/fBrem_E_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_E = new TCanvas();
+  Prepare1DHisto(h_array_fBrem, 1, "f_{brem}", "Events/0.04"); // 1 stands for ENDCAP
+  c_fBrem_E->SaveAs("plots/01_07_2021/fBrem_E_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_Plus_B = new TCanvas();
-  // Prepare1DHisto(h_array_fBrem_Plus, 0, "f_{brem}", "Events/0.04");
-  // c_fBrem_Plus_B->SaveAs("plots/02_06_2021/fBrem_Plus_B_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_Plus_B = new TCanvas();
+  Prepare1DHisto(h_array_fBrem_Plus, 0, "f_{brem}", "Events/0.04");
+  c_fBrem_Plus_B->SaveAs("plots/01_07_2021/fBrem_Plus_B_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_Minus_B = new TCanvas();
-  // Prepare1DHisto(h_array_fBrem_Minus, 0, "f_{brem}", "Events/0.04");
-  // c_fBrem_Minus_B->SaveAs("plots/02_06_2021/fBrem_Minus_B_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_Minus_B = new TCanvas();
+  Prepare1DHisto(h_array_fBrem_Minus, 0, "f_{brem}", "Events/0.04");
+  c_fBrem_Minus_B->SaveAs("plots/01_07_2021/fBrem_Minus_B_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_Plus_E = new TCanvas();
-  // Prepare1DHisto(h_array_fBrem_Plus, 1, "f_{brem}", "Events/0.04");
-  // c_fBrem_Plus_E->SaveAs("plots/02_06_2021/fBrem_Plus_E_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_Plus_E = new TCanvas();
+  Prepare1DHisto(h_array_fBrem_Plus, 1, "f_{brem}", "Events/0.04");
+  c_fBrem_Plus_E->SaveAs("plots/01_07_2021/fBrem_Plus_E_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_Minus_E = new TCanvas();
-  // Prepare1DHisto(h_array_fBrem_Minus, 1, "f_{brem}", "Events/0.04");
-  // c_fBrem_Minus_E->SaveAs("plots/02_06_2021/fBrem_Minus_E_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_Minus_E = new TCanvas();
+  Prepare1DHisto(h_array_fBrem_Minus, 1, "f_{brem}", "Events/0.04");
+  c_fBrem_Minus_E->SaveAs("plots/01_07_2021/fBrem_Minus_E_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_mass_B = new TCanvas();
-  // Prepare1DHisto(h_array_mass, 0, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
-  // c_mass_B->SaveAs("plots/02_06_2021/mass_B_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_mass_B = new TCanvas();
+  Prepare1DHisto(h_array_mass, 0, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
+  c_mass_B->SaveAs("plots/01_07_2021/mass_B_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_mass_E = new TCanvas();
-  // Prepare1DHisto(h_array_mass, 1, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
-  // c_mass_E->SaveAs("plots/02_06_2021/mass_E_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_mass_E = new TCanvas();
+  Prepare1DHisto(h_array_mass, 1, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
+  c_mass_E->SaveAs("plots/01_07_2021/mass_E_CutBased_DYNLO.pdf");
 
-  // TCanvas* c_mass_negFbrem_B = new TCanvas();
-  // Prepare1DHisto(h_array_mass_negFbrem, 0, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
-  // c_mass_negFbrem_B->SaveAs("plots/02_06_2021/mass_negFbrem_B_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_mass_negFbrem_B = new TCanvas();
+  Prepare1DHisto(h_array_mass_negFbrem, 0, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
+  c_mass_negFbrem_B->SaveAs("plots/01_07_2021/mass_negFbrem_B_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_mass_negFbrem_E = new TCanvas();
-  // Prepare1DHisto(h_array_mass_negFbrem, 1, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
-  // c_mass_negFbrem_E->SaveAs("plots/02_06_2021/mass_negFbrem_E_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_mass_negFbrem_E = new TCanvas();
+  Prepare1DHisto(h_array_mass_negFbrem, 1, "#it{m}_{ee} (GeV)", "Events/2.0 GeV");
+  c_mass_negFbrem_E->SaveAs("plots/01_07_2021/mass_negFbrem_E_CutBased_DYNLO.pdf");
 
-  // TCanvas* c_el_energy = new TCanvas();
-  // Prepare1DHisto(h_array_el_energy, 0, "E^{e} (GeV)", "Events/1.0 GeV");
-  // c_el_energy->SaveAs("plots/02_06_2021/el_energy_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_el_energy = new TCanvas();
+  Prepare1DHisto(h_array_el_energy, 0, "E^{e} (GeV)", "Events/1.0 GeV");
+  c_el_energy->SaveAs("plots/01_07_2021/el_energy_CutBased_DYNLO.pdf");
 
-  // TCanvas* c_PVz = new TCanvas();
-  // Prepare1DHisto(h_array_PVz, 0, "PV z (cm)", "Events/0.5 cm");
-  // c_PVz->SaveAs("plots/02_06_2021/PVz_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_el_pT = new TCanvas();
+  Prepare1DHisto(h_array_el_pT, 0, "#it{p}_{T}^{e} (GeV)", "Events/1.0 GeV");
+  c_el_pT->SaveAs("plots/01_07_2021/el_pT_CutBased_DYNLO.pdf");
+
+  TCanvas* c_PVz = new TCanvas();
+  Prepare1DHisto(h_array_PVz, 0, "PV z (cm)", "Events/0.5 cm");
+  c_PVz->SaveAs("plots/01_07_2021/PVz_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_vs_phi_DATA = new TCanvas();
-  // Prepare2DHisto(h2_array_fBrem_phi, 0, "#phi^{e}", "f_{brem}"); // 0 stands for DATA
-  // c_fBrem_vs_phi_DATA->SaveAs("plots/02_06_2021/fBrem_vs_phi_DATA_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_vs_phi_DATA = new TCanvas();
+  Prepare2DHisto(h2_array_fBrem_phi, 0, "#phi^{e}", "f_{brem}"); // 0 stands for DATA
+  c_fBrem_vs_phi_DATA->SaveAs("plots/01_07_2021/fBrem_vs_phi_DATA_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_vs_phi_MC = new TCanvas();
-  // Prepare2DHisto(h2_array_fBrem_phi, 1, "#phi^{e}", "f_{brem}"); // 1 stands for MC
-  // c_fBrem_vs_phi_MC->SaveAs("plots/02_06_2021/fBrem_vs_phi_MC_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_vs_phi_MC = new TCanvas();
+  Prepare2DHisto(h2_array_fBrem_phi, 1, "#phi^{e}", "f_{brem}"); // 1 stands for MC
+  c_fBrem_vs_phi_MC->SaveAs("plots/01_07_2021/fBrem_vs_phi_MC_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_vs_pT_DATA = new TCanvas();
-  // Prepare2DHisto(h2_array_fBrem_pT, 0, "#it{p}_{T}^{e} (GeV)", "f_{brem}");
-  // c_fBrem_vs_pT_DATA->SaveAs("plots/02_06_2021/fBrem_vs_pT_DATA_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_vs_pT_DATA = new TCanvas();
+  Prepare2DHisto(h2_array_fBrem_pT, 0, "#it{p}_{T}^{e} (GeV)", "f_{brem}");
+  c_fBrem_vs_pT_DATA->SaveAs("plots/01_07_2021/fBrem_vs_pT_DATA_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_vs_pT_MC = new TCanvas();
-  // Prepare2DHisto(h2_array_fBrem_pT, 1, "#it{p}_{T}^{e} (GeV)", "f_{brem}");
-  // c_fBrem_vs_pT_MC->SaveAs("plots/02_06_2021/fBrem_vs_pT_MC_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_vs_pT_MC = new TCanvas();
+  Prepare2DHisto(h2_array_fBrem_pT, 1, "#it{p}_{T}^{e} (GeV)", "f_{brem}");
+  c_fBrem_vs_pT_MC->SaveAs("plots/01_07_2021/fBrem_vs_pT_MC_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_vs_eta_DATA = new TCanvas();
-  // Prepare2DHisto(h2_array_fBrem_eta, 0, "#eta^{e}", "f_{brem}");
-  // c_fBrem_vs_eta_DATA->SaveAs("plots/02_06_2021/fBrem_vs_eta_DATA_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_vs_eta_DATA = new TCanvas();
+  Prepare2DHisto(h2_array_fBrem_eta, 0, "#eta^{e}", "f_{brem}");
+  c_fBrem_vs_eta_DATA->SaveAs("plots/01_07_2021/fBrem_vs_eta_DATA_CutBased_DYNLO.pdf");
   
-  // TCanvas* c_fBrem_vs_eta_MC = new TCanvas();
-  // Prepare2DHisto(h2_array_fBrem_eta, 1, "#eta^{e}", "f_{brem}");
-  // c_fBrem_vs_eta_MC->SaveAs("plots/02_06_2021/fBrem_vs_eta_MC_CutBased_DYNLO_custom.pdf");
+  TCanvas* c_fBrem_vs_eta_MC = new TCanvas();
+  Prepare2DHisto(h2_array_fBrem_eta, 1, "#eta^{e}", "f_{brem}");
+  c_fBrem_vs_eta_MC->SaveAs("plots/01_07_2021/fBrem_vs_eta_MC_CutBased_DYNLO.pdf");
+
+  TCanvas* c_etaDiff_vs_PVz_DATA = new TCanvas();
+  Prepare2DHisto(h2_array_etaDiff_PVz, 0, "PV_{z}","#eta^{e}-#eta^{e}_{SC}");
+  c_etaDiff_vs_PVz_DATA->SaveAs("plots/01_07_2021/etaDiff_vs_PVz_DATA_CutBased_DYNLO.pdf");
+
+  TCanvas* c_etaDiff_vs_PVz_MC = new TCanvas();
+  Prepare2DHisto(h2_array_etaDiff_PVz, 1, "PV_{z}","#eta^{e}-#eta^{e}_{SC}");
+  c_etaDiff_vs_PVz_MC->SaveAs("plots/01_07_2021/etaDiff_vs_PVz_MC_CutBased_DYNLO.pdf");
 
   //h_pT_DATA->Write();
   //h_nPV_DATA->Write();
   
-  TFile* fileOut = new TFile("histos/28_06_2021/fBrem_notFolded_vs_PVz.root","RECREATE");
+  TFile* fileOut = new TFile("histos/01_07_2021/fBrem_notFolded_etaSC.root","RECREATE");
   fileOut->cd();
   gDirectory->mkdir("DATA");
   fileOut->cd("DATA");

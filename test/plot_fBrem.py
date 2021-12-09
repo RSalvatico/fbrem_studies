@@ -5,6 +5,7 @@ from array import array
 import sys
 import copy
 
+#fileIn = TFile("histos/02_06_2021/fBrem_notFolded_full2017_CutBased_DYNLO.root")
 fileIn = TFile("histos/28_06_2021/fBrem_notFolded_vs_PVz.root")
 
 h_dict_DATA = dict()
@@ -45,7 +46,7 @@ def plot_fBrem():
         h_dict_MC[i].GetXaxis().SetTitle("f_{brem}")
         h_dict_MC[i].GetXaxis().SetTitleSize(0.05)
         h_dict_MC[i].GetXaxis().SetTitleOffset(0.7)
-        h_dict_MC[i].GetYaxis().SetTitle("Events/0.02")
+        h_dict_MC[i].GetYaxis().SetTitle("Events/0.01")
         h_dict_MC[i].GetYaxis().SetTitleOffset(1.5)
         h_dict_MC[i].Draw("hist")
         h_MCErr = copy.deepcopy(h_dict_MC[i])
@@ -56,7 +57,7 @@ def plot_fBrem():
         h_dict_DATA[i].SetMarkerStyle(20)
         h_dict_DATA[i].Draw("SAME,PE")
         
-        c_dict[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/fBrem_etaBins/full2017/CutBased_custom/h_fBrem_etaBins_" + str_i + "_" + str_iplus + ".png")
+        c_dict[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/fBrem_etaBins/full2017/PVz/PVzm5/h_fBrem_etaBins_" + str_i + "_" + str_iplus + ".png")
 
 def plot_fBrem_vs_PVz():
 
@@ -64,15 +65,20 @@ def plot_fBrem_vs_PVz():
         str_i = '%.6f' % i
         str_iplus = '%.6f' %(i+0.05)
         
-        h2_dict_fBrem_vs_PVz_DATA[i] = fileIn.Get("DATA/DATA_h2_fBrem_vs_PVz_etaBins_" + str_i + "__" + str_iplus)
-        h2_dict_fBrem_vs_PVz_MC[i]   = fileIn.Get("MC/MC_h2_fBrem_vs_PVz_etaBins_" + str_i + "__" + str_iplus)
+        h2_dict_fBrem_vs_PVz_DATA[i] = fileIn.Get("DATA/DATA_h2_fBrem_vs_PVz_etaBins_" + str_i + "_" + str_iplus)
+        h2_dict_fBrem_vs_PVz_MC[i]   = fileIn.Get("MC/MC_h2_fBrem_vs_PVz_etaBins_" + str_i + "_" + str_iplus)
         
         #Remove some unpleasant zeros from the histo names
         str_i = str_i.replace("0000","")
         str_iplus = str_iplus.replace("0000","")
 
 
-        gStyle.SetOptStat(0)
+        corr_factor_DATA = h2_dict_fBrem_vs_PVz_DATA[i].GetCorrelationFactor()
+        corr_factor_MC   = h2_dict_fBrem_vs_PVz_MC[i].GetCorrelationFactor()
+        print str_i,"-",str_iplus
+        print "cf DATA: ", corr_factor_DATA, "  cf MC: ", corr_factor_MC
+
+        #gStyle.SetOptStat(0)
         c_dict_fBrem_vs_PVz_DATA[i] = TCanvas()
         h2_dict_fBrem_vs_PVz_DATA[i].GetXaxis().SetTitle("PV z (cm)")
         h2_dict_fBrem_vs_PVz_DATA[i].GetXaxis().SetTitleSize(0.05)
@@ -81,7 +87,7 @@ def plot_fBrem_vs_PVz():
         h2_dict_fBrem_vs_PVz_DATA[i].GetYaxis().SetTitleOffset(1.0)
         h2_dict_fBrem_vs_PVz_DATA[i].GetYaxis().SetTitleSize(0.05)
         h2_dict_fBrem_vs_PVz_DATA[i].Draw("COLZ")
-        c_dict_fBrem_vs_PVz_DATA[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/fBrem_vs_PVz_etaBins/DATA/h_fBrem_vs_PVz_etaBins_" + str_i + "_" + str_iplus + ".png")
+        #c_dict_fBrem_vs_PVz_DATA[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/fBrem_vs_PVz_etaBins/DATA/h_fBrem_vs_PVz_etaBins_" + str_i + "_" + str_iplus + ".png")
         
         c_dict_fBrem_vs_PVz_MC[i] = TCanvas()
         h2_dict_fBrem_vs_PVz_MC[i].GetXaxis().SetTitle("PV z (cm)")
@@ -91,7 +97,7 @@ def plot_fBrem_vs_PVz():
         h2_dict_fBrem_vs_PVz_MC[i].GetYaxis().SetTitleOffset(1.0)
         h2_dict_fBrem_vs_PVz_MC[i].GetYaxis().SetTitleSize(0.05)
         h2_dict_fBrem_vs_PVz_MC[i].Draw("COLZ")
-        c_dict_fBrem_vs_PVz_MC[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/fBrem_vs_PVz_etaBins/MC/h_fBrem_vs_PVz_etaBins_" + str_i + "_" + str_iplus + ".png")
+        #c_dict_fBrem_vs_PVz_MC[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/fBrem_vs_PVz_etaBins/MC/h_fBrem_vs_PVz_etaBins_" + str_i + "_" + str_iplus + ".png")
 
 def plot_xOverX0():
 
@@ -101,6 +107,8 @@ def plot_xOverX0():
         #str_i = str_i.replace(".","_")
         #str_iplus = str_iplus.replace(".","_")
         
+        h_dict_DATA[i] = fileIn.Get("DATA/DATA_h_fBrem_etaBins_" + str_i + "_" + str_iplus)
+        h_dict_MC[i]   = fileIn.Get("MC/MC_h_fBrem_etaBins_" + str_i + "_" + str_iplus)
         h_dict_xOverX0_DATA[i] = fileIn.Get("DATA/DATA_h_xOverX0_etaBins_" + str_i + "_" + str_iplus)
         h_dict_xOverX0_MC[i]   = fileIn.Get("MC/MC_h_xOverX0_etaBins_" + str_i + "_" + str_iplus)
         
@@ -138,7 +146,10 @@ def plot_xOverX0():
         h_MCErr_xOverX0.Draw("sameE2")
         h_dict_xOverX0_DATA[i].SetMarkerStyle(20)
         h_dict_xOverX0_DATA[i].Draw("SAME,PE")
-        
+
+        print str_i, " ", str_iplus
+        print "DATA: ", xOverX0_DATA, "\pm", uncert_xOverX0_DATA, "  MC: ", xOverX0_MC, "\pm", uncert_xOverX0_MC
+        print
         h_line_DATA = TLine(xOverX0_DATA,0,xOverX0_DATA,h_dict_xOverX0_DATA[i].GetMaximum())
         h_line_MC   = TLine(xOverX0_MC,0,xOverX0_MC,h_dict_xOverX0_DATA[i].GetMaximum())
         h_line_DATA.SetLineColor(2)
@@ -147,10 +158,10 @@ def plot_xOverX0():
         h_line_MC.Draw("SAME")
         
         
-        c_dict_xOverX0[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/xOverX0_etaBins/full2017/02_01_2021/h_xOverX0_etaBins_" + str_i + "_" + str_iplus + ".png")
+        #c_dict_xOverX0[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/xOverX0_etaBins/full2017/02_01_2021/h_xOverX0_etaBins_" + str_i + "_" + str_iplus + ".png")
 
 if __name__ == "__main__":
     
-    plot_fBrem()
-    #plot_fBrem_vs_PVz()
+    #plot_fBrem()
+    plot_fBrem_vs_PVz()
     #plot_xOverX0()
