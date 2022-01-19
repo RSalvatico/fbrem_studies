@@ -5,9 +5,10 @@ isData = True
 if sys.argv[1] == "MC":
     isData = False
 
-fIn_DATA_MC = TFile("histos/cpp/plots_CutBased_DYNLO.root")
+#fIn_DATA_MC = TFile("histos/cpp/plots_CutBased_DYNLO.root")
+fIn_DATA_MC = TFile("histos/09_12_2021/plots_CutBased_DYNLO_preVFP_2016.root")
 #fIn_MC = TFile()
-fIn_Gauss = TFile("PVz_reweighting.root")
+fIn_Gauss = TFile("PVz_reweighting_2016preVFP.root")
 
 if isData:
     h_den = fIn_DATA_MC.Get("h_PVz_DATA")
@@ -31,12 +32,12 @@ h_num.GetYaxis().SetTitle("Events/0.5")
 h_num.Draw("hist")
 
 if isData:
-    fOut = TFile("PVz_weights_DATA.root","recreate")
+    fOut = TFile("PVz_weights_DATA_2016preVFP.root","recreate")
 else:
-    fOut = TFile("PVz_weights_MC.root","recreate")
+    fOut = TFile("PVz_weights_MC_2016preVFP.root","recreate")
 
 fOut.cd()
-h_num.Write()
+h_num.Write("h_reweight_PVz")
 fOut.Close()
 
 raw_input()

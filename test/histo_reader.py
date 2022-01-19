@@ -10,8 +10,12 @@ else:
     useMedian = False
 
 #fileIn = TFile("histos/xOverX0_2016.root")
-fileIn = TFile("histos/01_07_2021/fBrem_notFolded_PVz_reweighted.root")
-#fileIn = TFile("histos/cpp/fBrem_notFolded_full2017_CutBased_DYNLO.root")
+#fileIn = TFile("histos/01_07_2021/fBrem_notFolded_PVz_reweighted.root")
+#fileIn = TFile("histos/09_12_2021/fBrem_notFolded_postVFP_2016.root")
+#fileIn = TFile("histos/09_12_2021/fBrem_notFolded_2016preVFP_PVzReweighted.root")
+fileIn = TFile("histos/19_01_2022/highPU/fBrem_notFolded_2017_highPU.root")
+#fileIn2 = TFile("histos/19_01_2022/lowPU/fBrem_notFolded_2017_highPU.root")
+
 #fileIn = TFile("histos/01_07_2021/fBrem_notFolded_etaSC.root")
 h_dict_DATA = dict()
 h_dict_MC = dict()
@@ -106,9 +110,6 @@ for i in np.arange(-2.50,2.50,0.05):
         mean_energy_DATA = h_dict_energy_DATA[i].GetMean()
         mean_energy_MC   = h_dict_energy_MC[i].GetMean()
 
-        #if math.fabs(mean_energy_DATA - mean_energy_MC)/mean_energy_DATA > 0.01:
-        #    print "mean_energy_DATA: ", mean_energy_DATA, "  mean_energy_MC: ", mean_energy_MC
-        
         #Choose the most appropriate calibration file
         if math.fabs(mean_energy_DATA - 25.) < math.fabs(mean_energy_DATA - 50.):
             gr_t1 = calibration_file.Get("Calibration_graph_t1_25_GeV")
@@ -132,9 +133,6 @@ for i in np.arange(-2.50,2.50,0.05):
             dict_calib_xOverX0_DATA["0.05"] = (gr_t1.Eval(xOverX0_DATA) - dict_calib_xOverX0_DATA["0.05"])/(gr_t1.Eval(xOverX0_DATA) + dict_calib_xOverX0_DATA["0.05"])  
             dict_calib_xOverX0_MC["0.05"] = (gr_t1.Eval(xOverX0_MC) - dict_calib_xOverX0_MC["0.05"])/(gr_t1.Eval(xOverX0_MC) + dict_calib_xOverX0_MC["0.05"])
 
-            #print "NULL xOverX0_MC: ",
-            #print "xOverX0_MC: ",dict_calib_xOverX0_MC["0.05"], "  uncert_xOverX0_MC: ", dict_calib_xOverX0_err_MC["0.05"], "  **0**"
-
         if not str_i.startswith("-"):
 
             #Calculation of uncertainties must happen before calculation of the central values
@@ -144,15 +142,6 @@ for i in np.arange(-2.50,2.50,0.05):
             dict_calib_xOverX0_DATA[str_iplus] = (gr_t1.Eval(xOverX0_DATA) - dict_calib_xOverX0_DATA[str_iplus])/(gr_t1.Eval(xOverX0_DATA) + dict_calib_xOverX0_DATA[str_iplus])
             dict_calib_xOverX0_MC[str_iplus] = (gr_t1.Eval(xOverX0_MC) - dict_calib_xOverX0_MC[str_iplus])/(gr_t1.Eval(xOverX0_MC) + dict_calib_xOverX0_MC[str_iplus])
 
-            #print str_i,"_",str_iplus,
-            #print "xOverX0_MC: ", dict_calib_xOverX0_MC[str_iplus], "  uncert_xOverX0_MC: ", dict_calib_xOverX0_err_MC[str_iplus], " str_iplus: ", str_iplus, "  **1**"
-
-            if str_iplus == "0.30":
-                print "calib_X: ", dict_calib_xOverX0_MC[str_iplus], "  X: ", gr_t1.Eval(xOverX0_MC), "  unc. X: ", uncert_xOverX0_MC
-                print "mean_MC: ", mean_MC, "  xOverX0_MC:", xOverX0_MC
-            if str_iplus == "1.50":
-                print "calib_X: ", dict_calib_xOverX0_MC[str_iplus], "  X: ", gr_t1.Eval(xOverX0_MC), "  unc. X: ", uncert_xOverX0_MC
-                print "mean_MC: ", mean_MC, "  xOverX0_MC:", xOverX0_MC
 
         if str_i.startswith("-") and not str_i == "-0.00": #Do not change the order of these if conditions
             str_i = str_i.replace("-","")
@@ -160,12 +149,6 @@ for i in np.arange(-2.50,2.50,0.05):
             dict_calib_xOverX0_MC[str_i]   = gr_t1.Eval(xOverX0_MC)
             dict_calib_xOverX0_err_DATA[str_i] = uncert_xOverX0_DATA
             dict_calib_xOverX0_err_MC[str_i]   = uncert_xOverX0_MC
-
-            #print str_i,"_",str_iplus,
-            #print "xOverX0_MC: ", dict_calib_xOverX0_MC[str_i], "  uncert_xOverX0_MC: ", dict_calib_xOverX0_err_MC[str_i]," str_i: ", str_i,  "  **2**"
-            if str_i == "0.30":
-                print "calib_X: ", dict_calib_xOverX0_MC[str_i], "  X: ", gr_t1.Eval(xOverX0_MC), "  unc. X: ", uncert_xOverX0_MC
-                print "mean_MC: ", mean_MC, "  xOverX0_MC:", xOverX0_MC
 
         y_DATA.append(calib_xOverX0_DATA)
         y_MC.append(calib_xOverX0_MC)
@@ -269,7 +252,7 @@ g_ratio.Draw("AP")
 line_on_one.Draw("SAME")
 
 c_ratio = TCanvas()
-h_ratio = TH1F("h_ratio","", 10,0.95,1.05)
+h_ratio = TH1F("h_ratio","", 18,0.92,1.1)
 for it in xrange(13,87): #that is for |eta| ~< 1.8
     x_value = np.zeros(1, dtype=float)
     y_value = np.zeros(1, dtype=float)
@@ -282,8 +265,8 @@ if useMedian:
     c_graph.SaveAs("plots/xOverX0_median_ratio_CutBased_calibrated.pdf")
     c_ratio.SaveAs("plots/ratio_spread_median_CutBased_calibrated.pdf")
 else:
-    c_graph.SaveAs("plots/xOverX0_ratio_CutBased_calibrated.pdf")
-    c_ratio.SaveAs("plots/ratio_spread_CutBased_calibrated.pdf")
+    c_graph.SaveAs("plots/xOverX0_ratio_CutBased_2016preVFP_PVzReweighted.pdf")
+    c_ratio.SaveAs("plots/ratio_spread_CutBased_2016preVFP_PVzReweighted.pdf")
 
     for l in np.arange(0.05,2.55,0.05):
         str_i = '%.6f' % l
@@ -332,7 +315,7 @@ else:
     g_fBrem_asymmetry_DATA.GetYaxis().SetTitle("(t_{1}^{+} - t_{1}^{-}) / (t_{1}^{+} + t_{1}^{-})")
     g_fBrem_asymmetry_DATA.GetYaxis().SetTitleOffset(1.0)
     g_fBrem_asymmetry_DATA.GetYaxis().SetTitleSize(0.05)
-    g_fBrem_asymmetry_DATA.GetYaxis().SetRangeUser(-0.05,0.05)
+    g_fBrem_asymmetry_DATA.GetYaxis().SetRangeUser(-0.1,0.1)
     g_fBrem_asymmetry_DATA.Draw("AP")
     
     g_fBrem_asymmetry_MC = TGraphErrors(len(x_fBrem_asymmetry), x_fBrem_asymmetry, y_fBrem_asymmetry_MC, x_fBrem_asymmetry_err, y_fBrem_asymmetry_err_MC)
@@ -346,7 +329,7 @@ else:
     g_fBrem_asymmetry_MC.GetYaxis().SetTitle("(t_{1}^{+} - t_{1}^{-}) / (t_{1}^{+} + t_{1}^{-})")
     g_fBrem_asymmetry_MC.GetYaxis().SetTitleOffset(1.0)
     g_fBrem_asymmetry_MC.GetYaxis().SetTitleSize(0.05)
-    g_fBrem_asymmetry_MC.GetYaxis().SetRangeUser(-0.3,0.3)
+    g_fBrem_asymmetry_MC.GetYaxis().SetRangeUser(-0.1,0.1)
     g_fBrem_asymmetry_MC.Draw("SAME,P")
 
     fOut_graph = TFile("asymmetry_MC.root","RECREATE")
@@ -391,6 +374,6 @@ else:
     g_diff.Draw("AP")
     line_on_zero.Draw("SAME")
 
-    c_asymmetry.SaveAs("plots/t1_asymmetry_calibrated.pdf")
+    c_asymmetry.SaveAs("plots/t1_asymmetry_2016preVFP_PVzReweighted.pdf")
 
 raw_input()

@@ -6,7 +6,8 @@ import sys
 import copy
 
 #fileIn = TFile("histos/02_06_2021/fBrem_notFolded_full2017_CutBased_DYNLO.root")
-fileIn = TFile("histos/28_06_2021/fBrem_notFolded_vs_PVz.root")
+#fileIn = TFile("histos/28_06_2021/fBrem_notFolded_vs_PVz.root")
+fileIn = TFile("histos/09_12_2021/fBrem_notFolded_postVFP_2016.root")
 
 h_dict_DATA = dict()
 h_dict_MC = dict()
@@ -57,7 +58,7 @@ def plot_fBrem():
         h_dict_DATA[i].SetMarkerStyle(20)
         h_dict_DATA[i].Draw("SAME,PE")
         
-        c_dict[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/fBrem_etaBins/full2017/PVz/PVzm5/h_fBrem_etaBins_" + str_i + "_" + str_iplus + ".png")
+        c_dict[i].SaveAs("/afs/cern.ch/user/r/rselvati/www/fBrem/fBrem_etaBins/full2016/prePVz_recalibration/postVFP/h_fBrem_etaBins_" + str_i + "_" + str_iplus + ".png")
 
 def plot_fBrem_vs_PVz():
 
@@ -162,6 +163,6 @@ def plot_xOverX0():
 
 if __name__ == "__main__":
     
-    #plot_fBrem()
-    plot_fBrem_vs_PVz()
+    plot_fBrem()
+    #plot_fBrem_vs_PVz()
     #plot_xOverX0()
